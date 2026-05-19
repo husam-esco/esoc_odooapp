@@ -7,3 +7,5 @@ access_mobile_hr_api_token_manager,mobile.hr.api.token / HR Manager,model_mobile
 access_mobile_hr_api_token_portal,mobile.hr.api.token / Portal,model_mobile_hr_api_token,base.group_portal,1,0,0,0
 access_mobile_hr_api_audit_log_manager,mobile.hr.api.audit.log / HR Manager,model_mobile_hr_api_audit_log,hr.group_hr_manager,1,0,1,0
 access_mobile_hr_api_audit_log_user,mobile.hr.api.audit.log / HR User,model_mobile_hr_api_audit_log,hr.group_hr_user,1,0,0,0
+access_mobile_hr_api_push_sub_manager,mobile.hr.api.push.sub / HR Manager,model_mobile_hr_api_push_sub,hr.group_hr_manager,1,1,1,1
+access_mobile_hr_api_push_sub_portal,mobile.hr.api.push.sub / Portal,model_mobile_hr_api_push_sub,base.group_portal,1,1,1,0

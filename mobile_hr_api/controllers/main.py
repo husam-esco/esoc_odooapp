@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 _BASE = '/api/v1/mobile/hr'
 _AUTH = '/api/v1/mobile/auth'
+_PUSH = '/api/v1/mobile/push'
 
 
 # ─── Response helpers ──────────────────────────────────────────────────────────
@@ -698,22 +699,32 @@ class MobileHrApiController(http.Controller):
         date_from_str = payload.get('date_from')
         date_to_str = payload.get('date_to')
         description = (payload.get('description') or '').strip()
+        request_unit = (payload.get('request_unit') or 'day').lower()
 
-        if not leave_type_id or not date_from_str or not date_to_str:
+        if request_unit not in ('day', 'half_day', 'hour'):
             return _json_resp(
-                _err('leave_type_id, date_from, and date_to are required', 'BAD_REQUEST'), 400
+                _err('request_unit must be "day", "half_day", or "hour"', 'BAD_REQUEST'), 400
+            )
+
+        if not leave_type_id or not date_from_str:
+            return _json_resp(
+                _err('leave_type_id and date_from are required', 'BAD_REQUEST'), 400
+            )
+        if request_unit == 'day' and not date_to_str:
+            return _json_resp(
+                _err('date_to is required for day-unit leaves', 'BAD_REQUEST'), 400
             )
 
         try:
             date_from_dt = datetime.fromisoformat(date_from_str)
-            date_to_dt = datetime.fromisoformat(date_to_str)
+            date_to_dt = datetime.fromisoformat(date_to_str) if date_to_str else date_from_dt
         except ValueError:
             return _json_resp(
                 _err('Invalid date format — use ISO 8601 (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SS)',
                      'BAD_REQUEST'), 400
             )
 
-        if date_from_dt > date_to_dt:
+        if request_unit == 'day' and date_from_dt > date_to_dt:
             return _json_resp(_err('date_from must not be after date_to', 'BAD_REQUEST'), 400)
 
         try:
@@ -726,22 +737,69 @@ class MobileHrApiController(http.Controller):
         if not leave_type.exists():
             return _json_resp(_err('Leave type not found', 'NOT_FOUND'), 404)
 
-        try:
-            leave = user_env['hr.leave'].sudo().with_context(
-                mail_create_nolog=True,
-                mail_notrack=True,
-                leave_fast_create=True,
-            ).create({
+        # Build create values per request_unit.
+        # request_date_* drive _compute_date_from_to; omitting them defaults both to today.
+        if request_unit == 'half_day':
+            period = (payload.get('period') or 'am').lower()
+            if period not in ('am', 'pm'):
+                return _json_resp(_err('period must be "am" or "pm"', 'BAD_REQUEST'), 400)
+            create_vals = {
                 'employee_id': employee.id,
                 'holiday_status_id': lt_id,
-                # request_date_* are the Date fields that drive _compute_date_from_to;
-                # without them, Odoo defaults both to today regardless of date_from/date_to.
+                'request_unit_half': True,
+                'request_date_from': date_from_dt.date(),
+                'request_date_to': date_from_dt.date(),
+                'request_date_from_period': period,
+                'name': description or f'Leave — {employee.name}',
+            }
+        elif request_unit == 'hour':
+            hour_from = payload.get('hour_from')
+            hour_to = payload.get('hour_to')
+            if hour_from is None or hour_to is None:
+                return _json_resp(
+                    _err('hour_from and hour_to are required for hour-unit leaves', 'BAD_REQUEST'),
+                    400,
+                )
+            try:
+                hour_from = float(hour_from)
+                hour_to = float(hour_to)
+            except (TypeError, ValueError):
+                return _json_resp(
+                    _err('hour_from and hour_to must be numbers (e.g. 9.0, 12.5)', 'BAD_REQUEST'),
+                    400,
+                )
+            if not (0 <= hour_from <= 24 and 0 <= hour_to <= 24 and hour_from < hour_to):
+                return _json_resp(
+                    _err('hour_from must be < hour_to and both in range [0, 24]', 'BAD_REQUEST'),
+                    400,
+                )
+            create_vals = {
+                'employee_id': employee.id,
+                'holiday_status_id': lt_id,
+                'request_unit_hours': True,
+                'request_date_from': date_from_dt.date(),
+                'request_date_to': date_to_dt.date(),
+                'request_hour_from': hour_from,
+                'request_hour_to': hour_to,
+                'name': description or f'Leave — {employee.name}',
+            }
+        else:  # day
+            create_vals = {
+                'employee_id': employee.id,
+                'holiday_status_id': lt_id,
                 'request_date_from': date_from_dt.date(),
                 'request_date_to': date_to_dt.date(),
                 'date_from': date_from_dt,
                 'date_to': date_to_dt,
                 'name': description or f'Leave — {employee.name}',
-            })
+            }
+
+        try:
+            leave = user_env['hr.leave'].sudo().with_context(
+                mail_create_nolog=True,
+                mail_notrack=True,
+                leave_fast_create=True,
+            ).create(create_vals)
             request.env.cr.flush()  # surface deferred Odoo constraints now
         except Exception as exc:
             request.env.cr.rollback()
@@ -899,3 +957,86 @@ class MobileHrApiController(http.Controller):
                 for g in geofences
             ],
         }))
+
+    # ── Push notifications ──────────────────────────────────────────────────────
+
+    @http.route(f'{_PUSH}/vapid-key', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
+    def push_vapid_key(self, **kw):
+        if request.httprequest.method == 'OPTIONS':
+            return _preflight()
+        auth_result = self._authenticate()
+        if isinstance(auth_result, Response):
+            return auth_result
+
+        icp = request.env['ir.config_parameter'].sudo()
+        public_key = icp.get_param('mobile_hr_api.vapid_public_key', '')
+        if not public_key:
+            return _json_resp(_err(
+                'VAPID public key not configured — set ir.config_parameter '
+                '"mobile_hr_api.vapid_public_key"', 'NOT_CONFIGURED',
+            ), 503)
+        return _json_resp(_ok({'vapid_public_key': public_key}))
+
+    @http.route(f'{_PUSH}/subscribe', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False)
+    def push_subscribe(self, **kw):
+        if request.httprequest.method == 'OPTIONS':
+            return _preflight()
+        auth_result = self._authenticate()
+        if isinstance(auth_result, Response):
+            return auth_result
+        user, employee = auth_result
+
+        body = self._body() or {}
+        platform = (body.get('platform') or 'web').lower()
+        if platform not in ('web', 'android', 'ios'):
+            return _json_resp(_err('platform must be "web", "android", or "ios"', 'BAD_REQUEST'), 400)
+
+        device_id = (body.get('device_id') or '').strip()
+        if not device_id:
+            return _json_resp(_err('device_id is required', 'BAD_REQUEST'), 400)
+
+        PushSub = request.env['mobile.hr.api.push.sub'].sudo()
+        existing = PushSub.search([
+            ('employee_id', '=', employee.id),
+            ('device_id', '=', device_id),
+        ], limit=1)
+
+        vals = {
+            'platform': platform,
+            'is_active': True,
+            'endpoint': body.get('endpoint') or '',
+            'p256dh': body.get('p256dh') or '',
+            'auth_key': body.get('auth') or '',
+            'push_token': body.get('push_token') or '',
+        }
+        if existing:
+            existing.write(vals)
+            sub_id = existing.id
+        else:
+            vals.update({'employee_id': employee.id, 'device_id': device_id})
+            sub_id = PushSub.create(vals).id
+
+        return _json_resp(_ok({'id': sub_id, 'device_id': device_id}), 201)
+
+    @http.route(f'{_PUSH}/unsubscribe', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False)
+    def push_unsubscribe(self, **kw):
+        if request.httprequest.method == 'OPTIONS':
+            return _preflight()
+        auth_result = self._authenticate()
+        if isinstance(auth_result, Response):
+            return auth_result
+        user, employee = auth_result
+
+        body = self._body() or {}
+        device_id = (body.get('device_id') or '').strip()
+        if not device_id:
+            return _json_resp(_err('device_id is required', 'BAD_REQUEST'), 400)
+
+        PushSub = request.env['mobile.hr.api.push.sub'].sudo()
+        subs = PushSub.search([
+            ('employee_id', '=', employee.id),
+            ('device_id', '=', device_id),
+        ])
+        if subs:
+            subs.write({'is_active': False})
+        return _json_resp(_ok({}, 'Unsubscribed successfully'))

@@ -1,6 +1,6 @@
 {
     'name': 'Mobile HR API',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources',
     'summary': 'Secure mobile self-service API for employees (attendance, leaves, payslips)',
     'description': (
