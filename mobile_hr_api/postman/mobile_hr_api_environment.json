@@ -1,27 +1,34 @@
 {
   "id": "b2c3d4e5-f6a7-8901-bcde-f23456789012",
-  "name": "Mobile HR API — Local Dev",
+  "name": "Mobile HR API — od19ce2 (91.109.114.135:19102)",
   "values": [
     {
       "key": "base_url",
-      "value": "http://localhost:19006",
+      "value": "http://91.109.114.135:19102",
       "type": "default",
       "enabled": true,
-      "description": "Odoo host + port. Change to your server address in staging/production."
+      "description": "Odoo host + port."
     },
     {
       "key": "login",
-      "value": "employee@company.com",
+      "value": "esco",
       "type": "default",
       "enabled": true,
-      "description": "Portal user login (email)"
+      "description": "Mitchell Admin — employee with PIN 123456"
     },
     {
       "key": "password",
-      "value": "employee_password",
+      "value": "esco",
       "type": "secret",
       "enabled": true,
-      "description": "Portal user password"
+      "description": "Password for esco user"
+    },
+    {
+      "key": "pin",
+      "value": "123456",
+      "type": "default",
+      "enabled": true,
+      "description": "Mitchell Admin's HR PIN"
     },
     {
       "key": "device_id",
@@ -42,17 +49,45 @@
       "value": "1",
       "type": "default",
       "enabled": true,
-      "description": "Auto-populated by Leave Types request. Override to test a specific type."
+      "description": "Paid Time Off (id=1). Auto-populated by Leave Types request."
     },
     {
       "key": "payslip_id",
       "value": "1",
       "type": "default",
       "enabled": true,
-      "description": "Auto-populated by Payslip List request. Override to test a specific slip."
+      "description": "Auto-populated by Payslip List request. hr_payroll not installed on this instance."
+    },
+    {
+      "key": "lat_in_zone",
+      "value": "25.2048",
+      "type": "default",
+      "enabled": true,
+      "description": "Latitude inside HQ Office geofence zone (centre coords)"
+    },
+    {
+      "key": "lng_in_zone",
+      "value": "55.2708",
+      "type": "default",
+      "enabled": true,
+      "description": "Longitude inside HQ Office geofence zone"
+    },
+    {
+      "key": "lat_out_zone",
+      "value": "0",
+      "type": "default",
+      "enabled": true,
+      "description": "Latitude outside all geofence zones (0,0 = ocean)"
+    },
+    {
+      "key": "lng_out_zone",
+      "value": "0",
+      "type": "default",
+      "enabled": true,
+      "description": "Longitude outside all geofence zones"
     }
   ],
   "_postman_variable_scope": "environment",
-  "_postman_exported_at": "2026-05-12T00:00:00.000Z",
+  "_postman_exported_at": "2026-05-19T00:00:00.000Z",
   "_postman_exported_using": "Postman/10.0"
 }

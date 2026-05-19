@@ -333,14 +333,14 @@ class MobileHrApiController(http.Controller):
 
     @http.route(
         [f'{_AUTH}/<path:subpath>', f'{_BASE}/<path:subpath>'],
-        type='http', auth='none', methods=['OPTIONS'], csrf=False, cors='*',
+        type='http', auth='none', methods=['OPTIONS'], csrf=False,
     )
     def cors_preflight(self, subpath, **kw):
         return _preflight()
 
     # ── Authentication ─────────────────────────────────────────────────────────
 
-    @http.route(f'{_AUTH}/login', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_AUTH}/login', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False)
     def login(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -403,7 +403,7 @@ class MobileHrApiController(http.Controller):
             'expires_in_days': settings.token_validity_days,
         }))
 
-    @http.route(f'{_AUTH}/logout', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_AUTH}/logout', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False)
     def logout(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -424,11 +424,11 @@ class MobileHrApiController(http.Controller):
             token.is_active = False
 
         self._audit(user.id, employee.id, 'logout', f'{_AUTH}/logout', 'success')
-        return _json_resp(_ok(message='Logged out successfully'))
+        return _json_resp(_ok({}, 'Logged out successfully'))
 
     # ── Employee profile ───────────────────────────────────────────────────────
 
-    @http.route(f'{_BASE}/me', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/me', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
     def get_profile(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -444,7 +444,7 @@ class MobileHrApiController(http.Controller):
 
     @http.route(
         f'{_BASE}/attendance/check-in',
-        type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False, cors='*',
+        type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False,
     )
     def attendance_checkin(self, **kw):
         if request.httprequest.method == 'OPTIONS':
@@ -475,7 +475,8 @@ class MobileHrApiController(http.Controller):
             )
             return _json_resp(_err(geo_msg, 'GEOFENCE_VIOLATION'), 403)
 
-        open_att = request.env['hr.attendance'].sudo().search([
+        hr_att = request.env(user=user.id)['hr.attendance'].sudo()
+        open_att = hr_att.search([
             ('employee_id', '=', employee.id),
             ('check_out', '=', False),
         ], limit=1)
@@ -501,7 +502,7 @@ class MobileHrApiController(http.Controller):
         if isinstance(device_meta, dict):
             vals['checkin_device_id'] = str(device_meta.get('device_id', ''))[:256]
 
-        attendance = request.env['hr.attendance'].sudo().create(vals)
+        attendance = hr_att.create(vals)
         self._audit(
             user.id, employee.id, 'checkin',
             f'{_BASE}/attendance/check-in', 'success', geo_msg,
@@ -515,7 +516,7 @@ class MobileHrApiController(http.Controller):
 
     @http.route(
         f'{_BASE}/attendance/check-out',
-        type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False, cors='*',
+        type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False,
     )
     def attendance_checkout(self, **kw):
         if request.httprequest.method == 'OPTIONS':
@@ -546,7 +547,8 @@ class MobileHrApiController(http.Controller):
             )
             return _json_resp(_err(geo_msg, 'GEOFENCE_VIOLATION'), 403)
 
-        open_att = request.env['hr.attendance'].sudo().search([
+        hr_att = request.env(user=user.id)['hr.attendance'].sudo()
+        open_att = hr_att.search([
             ('employee_id', '=', employee.id),
             ('check_out', '=', False),
         ], limit=1)
@@ -581,8 +583,42 @@ class MobileHrApiController(http.Controller):
         }))
 
     @http.route(
+        f'{_BASE}/attendance/check-in-pin',
+        type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False,
+    )
+    def attendance_check_in_pin(self, **kw):
+        if request.httprequest.method == 'OPTIONS':
+            return _preflight()
+        auth_result = self._authenticate()
+        if isinstance(auth_result, Response):
+            return auth_result
+        user, employee = auth_result
+        body = self._body() or {}
+        pin = (body.get('pin') or '').strip()
+        if not pin or employee.sudo().pin != pin:
+            return _json_resp(_err('Invalid PIN.', 'INVALID_PIN'), 401)
+        return self.attendance_checkin(**kw)
+
+    @http.route(
+        f'{_BASE}/attendance/check-out-pin',
+        type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False,
+    )
+    def attendance_check_out_pin(self, **kw):
+        if request.httprequest.method == 'OPTIONS':
+            return _preflight()
+        auth_result = self._authenticate()
+        if isinstance(auth_result, Response):
+            return auth_result
+        user, employee = auth_result
+        body = self._body() or {}
+        pin = (body.get('pin') or '').strip()
+        if not pin or employee.sudo().pin != pin:
+            return _json_resp(_err('Invalid PIN.', 'INVALID_PIN'), 401)
+        return self.attendance_checkout(**kw)
+
+    @http.route(
         f'{_BASE}/attendance/history',
-        type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*',
+        type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False,
     )
     def attendance_history(self, **kw):
         if request.httprequest.method == 'OPTIONS':
@@ -621,7 +657,7 @@ class MobileHrApiController(http.Controller):
 
     # ── Leaves ─────────────────────────────────────────────────────────────────
 
-    @http.route(f'{_BASE}/leaves/types', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/leaves/types', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
     def leave_types(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -630,7 +666,7 @@ class MobileHrApiController(http.Controller):
             return auth_result
         user, employee = auth_result
 
-        leave_types = request.env['hr.leave.type'].sudo().search([
+        leave_types = request.env(user=user.id)['hr.leave.type'].sudo().search([
             ('company_id', 'in', [employee.company_id.id, False]),
             ('active', '=', True),
         ])
@@ -645,7 +681,7 @@ class MobileHrApiController(http.Controller):
             })
         return _json_resp(_ok(data))
 
-    @http.route(f'{_BASE}/leaves', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/leaves', type='http', auth='none', methods=['POST', 'OPTIONS'], csrf=False)
     def create_leave(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -685,12 +721,13 @@ class MobileHrApiController(http.Controller):
         except (TypeError, ValueError):
             return _json_resp(_err('leave_type_id must be an integer', 'BAD_REQUEST'), 400)
 
-        leave_type = request.env['hr.leave.type'].sudo().browse(lt_id)
+        user_env = request.env(user=user.id)
+        leave_type = user_env['hr.leave.type'].sudo().browse(lt_id)
         if not leave_type.exists():
             return _json_resp(_err('Leave type not found', 'NOT_FOUND'), 404)
 
         try:
-            leave = request.env['hr.leave'].sudo().with_context(
+            leave = user_env['hr.leave'].sudo().with_context(
                 mail_create_nolog=True,
                 mail_notrack=True,
                 leave_fast_create=True,
@@ -701,8 +738,9 @@ class MobileHrApiController(http.Controller):
                 'date_to': date_to_dt,
                 'name': description or f'Leave — {employee.name}',
             })
-            leave.action_confirm()
+            request.env.cr.flush()  # surface deferred Odoo constraints now
         except Exception as exc:
+            request.env.cr.rollback()
             _logger.exception('Leave creation failed for employee %s', employee.id)
             self._audit(
                 user.id, employee.id, 'leave_create_failed',
@@ -716,7 +754,7 @@ class MobileHrApiController(http.Controller):
         )
         return _json_resp(_ok(_ser_leave(leave)), 201)
 
-    @http.route(f'{_BASE}/leaves/history', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/leaves/history', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
     def leave_history(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -731,10 +769,15 @@ class MobileHrApiController(http.Controller):
 
         domain = [('employee_id', '=', employee.id)]
         valid_states = {'draft', 'confirm', 'validate1', 'validate', 'refuse'}
-        if state and state in valid_states:
+        if state:
+            if state not in valid_states:
+                return _json_resp(
+                    _err(f'Invalid state "{state}" — must be one of: {", ".join(sorted(valid_states))}',
+                         'BAD_REQUEST'), 400
+                )
             domain.append(('state', '=', state))
 
-        LeaveModel = request.env['hr.leave'].sudo()
+        LeaveModel = request.env(user=user.id)['hr.leave'].sudo()
         total = LeaveModel.search_count(domain)
         records = LeaveModel.search(domain, order='date_from desc', limit=limit, offset=offset)
 
@@ -748,7 +791,7 @@ class MobileHrApiController(http.Controller):
 
     # ── Payslips ───────────────────────────────────────────────────────────────
 
-    @http.route(f'{_BASE}/payslips', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/payslips', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
     def payslip_list(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -778,7 +821,7 @@ class MobileHrApiController(http.Controller):
 
     @http.route(
         f'{_BASE}/payslips/<int:payslip_id>',
-        type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*',
+        type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False,
     )
     def payslip_detail(self, payslip_id, **kw):
         if request.httprequest.method == 'OPTIONS':
@@ -811,7 +854,7 @@ class MobileHrApiController(http.Controller):
 
     # ── Meta ───────────────────────────────────────────────────────────────────
 
-    @http.route(f'{_BASE}/version', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/version', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
     def version(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()
@@ -822,7 +865,7 @@ class MobileHrApiController(http.Controller):
             'odoo_series': '19.0',
         }))
 
-    @http.route(f'{_BASE}/config', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False, cors='*')
+    @http.route(f'{_BASE}/config', type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False)
     def config(self, **kw):
         if request.httprequest.method == 'OPTIONS':
             return _preflight()

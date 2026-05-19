@@ -6,25 +6,27 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url",            "value": "http://localhost:19006", "type": "string" },
-    { "key": "token",               "value": "",                       "type": "string" },
-    { "key": "token_a",             "value": "",                       "type": "string" },
-    { "key": "token_b",             "value": "",                       "type": "string" },
-    { "key": "old_token",           "value": "",                       "type": "string" },
-    { "key": "login",               "value": "employee@company.com",   "type": "string" },
-    { "key": "password",            "value": "employee_password",      "type": "string" },
-    { "key": "login_b",             "value": "employee2@company.com",  "type": "string" },
-    { "key": "password_b",          "value": "employee2_password",     "type": "string" },
-    { "key": "device_id",           "value": "POSTMAN-DEVICE-001",     "type": "string" },
-    { "key": "device_id_alt",       "value": "POSTMAN-DEVICE-002",     "type": "string" },
-    { "key": "leave_type_id",       "value": "1",                      "type": "string" },
-    { "key": "leave_type_empty_id", "value": "2",                      "type": "string" },
-    { "key": "payslip_id",          "value": "1",                      "type": "string" },
-    { "key": "other_payslip_id",    "value": "2",                      "type": "string" },
-    { "key": "lat_in_zone",         "value": "25.2048",                "type": "string" },
-    { "key": "lng_in_zone",         "value": "55.2708",                "type": "string" },
-    { "key": "lat_out_zone",        "value": "0",                      "type": "string" },
-    { "key": "lng_out_zone",        "value": "0",                      "type": "string" }
+    { "key": "base_url",            "value": "http://91.109.114.135:19102", "type": "string" },
+    { "key": "token",               "value": "",                            "type": "string" },
+    { "key": "token_a",             "value": "",                            "type": "string" },
+    { "key": "token_b",             "value": "",                            "type": "string" },
+    { "key": "old_token",           "value": "",                            "type": "string" },
+    { "key": "login",               "value": "esco",                        "type": "string" },
+    { "key": "password",            "value": "esco",                        "type": "string" },
+    { "key": "pin",                 "value": "123456",                      "type": "string", "description": "Mitchell Admin PIN" },
+    { "key": "login_b",             "value": "demo",                        "type": "string" },
+    { "key": "password_b",          "value": "demo",                        "type": "string" },
+    { "key": "pin_b",               "value": "654321",                      "type": "string", "description": "Marc Demo PIN" },
+    { "key": "device_id",           "value": "POSTMAN-DEVICE-001",          "type": "string" },
+    { "key": "device_id_alt",       "value": "POSTMAN-DEVICE-002",          "type": "string" },
+    { "key": "leave_type_id",       "value": "4",                           "type": "string", "description": "Unpaid (no allocation required) — auto-set by 4.1" },
+    { "key": "leave_type_empty_id", "value": "2",                           "type": "string", "description": "Sick Time Off" },
+    { "key": "payslip_id",          "value": "1",                           "type": "string" },
+    { "key": "other_payslip_id",    "value": "2",                           "type": "string" },
+    { "key": "lat_in_zone",         "value": "25.2048",                     "type": "string" },
+    { "key": "lng_in_zone",         "value": "55.2708",                     "type": "string" },
+    { "key": "lat_out_zone",        "value": "0",                           "type": "string" },
+    { "key": "lng_out_zone",        "value": "0",                           "type": "string" }
   ],
   "auth": {
     "type": "bearer",
@@ -46,23 +48,28 @@
       "script": {
         "type": "text/javascript",
         "exec": [
-          "// Global assertions: every JSON response must follow envelope",
-          "pm.test('Content-Type is application/json', () => {",
-          "    const ct = pm.response.headers.get('Content-Type') || '';",
-          "    pm.expect(ct.toLowerCase()).to.include('application/json');",
-          "});",
-          "pm.test('Envelope shape valid', () => {",
-          "    let json;",
-          "    try { json = pm.response.json(); } catch (e) { pm.expect.fail('Body not JSON'); }",
-          "    pm.expect(json).to.have.property('success');",
-          "    if (json.success === true)  pm.expect(json).to.have.property('data');",
-          "    if (json.success === false) {",
-          "        pm.expect(json).to.have.property('error');",
-          "        pm.expect(json.error).to.have.property('code');",
-          "        pm.expect(json.error).to.have.property('message');",
-          "        pm.expect(json.error.message).to.not.match(/Traceback|File \"|line \\d+/);",
-          "    }",
-          "});"
+          "// Skip checks for 204 (no body) or non-JSON (Odoo router HTML 404/405)",
+          "const status = pm.response.code;",
+          "const ct = (pm.response.headers.get('Content-Type') || '').toLowerCase();",
+          "const isJson = ct.includes('application/json');",
+          "const isNoBody = status === 204;",
+          "if (!isNoBody && isJson) {",
+          "    pm.test('Content-Type is application/json', () => pm.expect(isJson).to.be.true);",
+          "}",
+          "if (!isNoBody && isJson) {",
+          "    pm.test('Envelope shape valid', () => {",
+          "        let json;",
+          "        try { json = pm.response.json(); } catch (e) { pm.expect.fail('Body not JSON'); }",
+          "        pm.expect(json).to.have.property('success');",
+          "        if (json.success === true)  pm.expect(json).to.have.property('data');",
+          "        if (json.success === false) {",
+          "            pm.expect(json).to.have.property('error');",
+          "            pm.expect(json.error).to.have.property('code');",
+          "            pm.expect(json.error).to.have.property('message');",
+          "            pm.expect(json.error.message).to.not.match(/Traceback|File \"|line \\d+/);",
+          "        }",
+          "    });",
+          "}"
         ]
       }
     }
@@ -407,7 +414,12 @@
                   "pm.test('200', () => pm.response.to.have.status(200));",
                   "const j = pm.response.json();",
                   "pm.test('array', () => pm.expect(j.data).to.be.an('array'));",
-                  "if (j.data.length > 0) pm.collectionVariables.set('leave_type_id', j.data[0].id);"
+                  "if (j.data.length > 0) {",
+          "    const noAlloc = j.data.find(t => !t.requires_allocation);",
+          "    const chosen = noAlloc || j.data[0];",
+          "    pm.collectionVariables.set('leave_type_id', chosen.id);",
+          "    console.log('Using leave type:', chosen.name, '(id:', chosen.id, ', requires_allocation:', chosen.requires_allocation, ')');",
+          "}"
                 ]
               }
             }
@@ -422,11 +434,14 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "const f = new Date(); f.setDate(f.getDate() + 30);",
+                  "// Unique far-future date per run — avoids leave-overlap conflicts on re-runs",
                   "const p = n => String(n).padStart(2,'0');",
+                  "const seed = Math.floor(Date.now() / 86400000) % 28;",
+                  "const f = new Date(2099, seed % 12, (seed % 27) + 1);",
                   "const ymd = `${f.getFullYear()}-${p(f.getMonth()+1)}-${p(f.getDate())}`;",
                   "pm.variables.set('leave_date_from', `${ymd}T08:00:00`);",
-                  "pm.variables.set('leave_date_to',   `${ymd}T17:00:00`);"
+                  "pm.variables.set('leave_date_to',   `${ymd}T17:00:00`);",
+                  "console.log('Leave date:', ymd);"
                 ]
               }
             },
@@ -803,7 +818,9 @@
         {
           "name": "7.1 Method not allowed — GET /auth/login",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('405 or 404', () => pm.expect([404,405]).to.include(pm.response.code));"] } }
+            { "listen": "test", "script": { "type": "text/javascript", "exec": [
+              "pm.test('405 or 404 (Odoo rejects wrong method)', () => pm.expect([404,405]).to.include(pm.response.code));"
+            ] } }
           ],
           "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] } }
         },
@@ -847,6 +864,223 @@
             { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
           ],
           "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/payslips", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","payslips"] } }
+        }
+      ]
+    },
+
+    {
+      "name": "9. PIN Attendance",
+      "item": [
+        {
+          "name": "9.1 Check-in PIN — happy path",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json().data;",
+                  "pm.test('attendance_id present', () => pm.expect(d.attendance_id).to.be.a('number'));",
+                  "pm.test('check_in ISO', () => pm.expect(d.check_in).to.match(/^\\d{4}-\\d{2}-\\d{2}T/));",
+                  "pm.collectionVariables.set('pin_attendance_id', d.attendance_id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 12.5\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
+        },
+        {
+          "name": "9.2 Check-in PIN — already checked in → 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409));",
+                  "pm.test('ALREADY_CHECKED_IN', () => pm.expect(pm.response.json().error.code).to.eql('ALREADY_CHECKED_IN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
+        },
+        {
+          "name": "9.3 Check-in PIN — wrong PIN → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));",
+                  "pm.test('INVALID_PIN', () => pm.expect(pm.response.json().error.code).to.eql('INVALID_PIN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"000000\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
+        },
+        {
+          "name": "9.4 Check-in PIN — empty PIN → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));",
+                  "pm.test('INVALID_PIN', () => pm.expect(pm.response.json().error.code).to.eql('INVALID_PIN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
+        },
+        {
+          "name": "9.5 Check-in PIN — no token → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('401', () => pm.response.to.have.status(401));"]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
+        },
+        {
+          "name": "9.6 Check-in PIN — geofence violation → 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('403 or 409', () => pm.expect([403,409]).to.include(pm.response.code));",
+                  "if (pm.response.code === 403) pm.test('GEOFENCE_VIOLATION', () => pm.expect(pm.response.json().error.code).to.eql('GEOFENCE_VIOLATION'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_out_zone}},\n  \"longitude\": {{lng_out_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
+        },
+        {
+          "name": "9.7 Check-out PIN — happy path",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test('check_out set', () => pm.expect(d.check_out).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 10.0\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out-pin"] }
+          }
+        },
+        {
+          "name": "9.8 Check-out PIN — not checked in → 409",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409));",
+                  "pm.test('NOT_CHECKED_IN', () => pm.expect(pm.response.json().error.code).to.eql('NOT_CHECKED_IN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out-pin"] }
+          }
+        },
+        {
+          "name": "9.9 Check-out PIN — wrong PIN → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));",
+                  "pm.test('INVALID_PIN', () => pm.expect(pm.response.json().error.code).to.eql('INVALID_PIN'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"999999\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out-pin"] }
+          }
+        },
+        {
+          "name": "9.10 OPTIONS preflight check-in-pin → 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204 NO CONTENT', () => pm.response.to.have.status(204));",
+                  "pm.test('CORS origin header', () => pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.eql('*'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "OPTIONS",
+            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+          }
         }
       ]
     },

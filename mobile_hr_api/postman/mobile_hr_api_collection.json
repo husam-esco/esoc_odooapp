@@ -6,13 +6,16 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url",      "value": "http://localhost:19006", "type": "string" },
-    { "key": "token",         "value": "",                       "type": "string", "description": "Auto-populated by the Login test script" },
-    { "key": "login",         "value": "employee@company.com",   "type": "string" },
-    { "key": "password",      "value": "employee_password",      "type": "string" },
-    { "key": "device_id",     "value": "POSTMAN-DEVICE-001",     "type": "string" },
-    { "key": "leave_type_id", "value": "1",                      "type": "string" },
-    { "key": "payslip_id",    "value": "1",                      "type": "string" }
+    { "key": "base_url",      "value": "http://91.109.114.135:19102", "type": "string" },
+    { "key": "token",         "value": "",                            "type": "string", "description": "Auto-populated by the Login test script" },
+    { "key": "login",         "value": "esco",                        "type": "string" },
+    { "key": "password",      "value": "esco",                        "type": "string" },
+    { "key": "pin",           "value": "123456",                      "type": "string" },
+    { "key": "device_id",     "value": "POSTMAN-DEVICE-001",          "type": "string" },
+    { "key": "leave_type_id", "value": "1",                           "type": "string" },
+    { "key": "payslip_id",    "value": "1",                           "type": "string" },
+    { "key": "lat_in_zone",   "value": "25.2048",                     "type": "string" },
+    { "key": "lng_in_zone",   "value": "55.2708",                     "type": "string" }
   ],
   "auth": {
     "type": "bearer",
@@ -232,6 +235,93 @@
               "code": 200,
               "header": [{ "key": "Content-Type", "value": "application/json" }],
               "body": "{\n  \"success\": true,\n  \"data\": {\n    \"attendance_id\": 101,\n    \"check_in\": \"2024-06-01T08:00:00\",\n    \"check_out\": \"2024-06-01T17:02:33\",\n    \"worked_hours\": 9.0425,\n    \"geofence_message\": \"Within zone — 38m from centre\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check-in (PIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Check-in accepted (201) or already checked in (409)', () => {",
+                  "    pm.expect([201, 409]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 12.5\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "attendance", "check-in-pin"]
+            },
+            "description": "Check in using HR PIN instead of password-derived token alone. Employee must have a PIN set in Odoo. Returns same response as regular check-in.\n\n**Error codes:**\n- `401 INVALID_PIN` — PIN missing or incorrect\n- `409 ALREADY_CHECKED_IN` — open attendance already exists\n- `403 GEOFENCE_VIOLATION` — outside all active geofence zones"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"attendance_id\": 20,\n    \"check_in\": \"2026-05-19T08:00:00\",\n    \"geofence_message\": \"Within zone — 0m from centre\"\n  }\n}"
+            },
+            {
+              "name": "401 INVALID_PIN",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"error\": { \"code\": \"INVALID_PIN\", \"message\": \"Invalid PIN.\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check-out (PIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Check-out accepted (200) or not checked in (409)', () => {",
+                  "    pm.expect([200, 409]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 15.0\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "attendance", "check-out-pin"]
+            },
+            "description": "Check out using HR PIN. Validates PIN then closes the open attendance record."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"attendance_id\": 20,\n    \"check_in\": \"2026-05-19T08:00:00\",\n    \"check_out\": \"2026-05-19T17:00:00\",\n    \"worked_hours\": 9.0,\n    \"geofence_message\": \"Within zone — 0m from centre\"\n  }\n}"
             }
           ]
         },
