@@ -1,0 +1,1 @@
+# esoc_odooapp
