@@ -6,31 +6,125 @@
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url",            "value": "http://91.109.114.135:19102", "type": "string" },
-    { "key": "token",               "value": "",                            "type": "string" },
-    { "key": "token_a",             "value": "",                            "type": "string" },
-    { "key": "token_b",             "value": "",                            "type": "string" },
-    { "key": "old_token",           "value": "",                            "type": "string" },
-    { "key": "login",               "value": "esco",                        "type": "string" },
-    { "key": "password",            "value": "esco",                        "type": "string" },
-    { "key": "pin",                 "value": "123456",                      "type": "string", "description": "Mitchell Admin PIN" },
-    { "key": "login_b",             "value": "demo",                        "type": "string" },
-    { "key": "password_b",          "value": "demo",                        "type": "string" },
-    { "key": "pin_b",               "value": "654321",                      "type": "string", "description": "Marc Demo PIN" },
-    { "key": "device_id",           "value": "POSTMAN-DEVICE-001",          "type": "string" },
-    { "key": "device_id_alt",       "value": "POSTMAN-DEVICE-002",          "type": "string" },
-    { "key": "leave_type_id",       "value": "4",                           "type": "string", "description": "Unpaid (no allocation required) — auto-set by 4.1" },
-    { "key": "leave_type_empty_id", "value": "2",                           "type": "string", "description": "Sick Time Off" },
-    { "key": "payslip_id",          "value": "1",                           "type": "string" },
-    { "key": "other_payslip_id",    "value": "2",                           "type": "string" },
-    { "key": "lat_in_zone",         "value": "25.2048",                     "type": "string" },
-    { "key": "lng_in_zone",         "value": "55.2708",                     "type": "string" },
-    { "key": "lat_out_zone",        "value": "0",                           "type": "string" },
-    { "key": "lng_out_zone",        "value": "0",                           "type": "string" }
+    {
+      "key": "base_url",
+      "value": "http://91.109.114.135:19102",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_a",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "token_b",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "old_token",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "login",
+      "value": "esco",
+      "type": "string"
+    },
+    {
+      "key": "password",
+      "value": "esco",
+      "type": "string"
+    },
+    {
+      "key": "pin",
+      "value": "123456",
+      "type": "string",
+      "description": "Mitchell Admin PIN"
+    },
+    {
+      "key": "login_b",
+      "value": "demo",
+      "type": "string"
+    },
+    {
+      "key": "password_b",
+      "value": "demo",
+      "type": "string"
+    },
+    {
+      "key": "pin_b",
+      "value": "654321",
+      "type": "string",
+      "description": "Marc Demo PIN"
+    },
+    {
+      "key": "device_id",
+      "value": "POSTMAN-DEVICE-001",
+      "type": "string"
+    },
+    {
+      "key": "device_id_alt",
+      "value": "POSTMAN-DEVICE-002",
+      "type": "string"
+    },
+    {
+      "key": "leave_type_id",
+      "value": "4",
+      "type": "string",
+      "description": "Unpaid (no allocation required) — auto-set by 4.1"
+    },
+    {
+      "key": "leave_type_empty_id",
+      "value": "2",
+      "type": "string",
+      "description": "Sick Time Off"
+    },
+    {
+      "key": "payslip_id",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "other_payslip_id",
+      "value": "2",
+      "type": "string"
+    },
+    {
+      "key": "lat_in_zone",
+      "value": "25.2048",
+      "type": "string"
+    },
+    {
+      "key": "lng_in_zone",
+      "value": "55.2708",
+      "type": "string"
+    },
+    {
+      "key": "lat_out_zone",
+      "value": "0",
+      "type": "string"
+    },
+    {
+      "key": "lng_out_zone",
+      "value": "0",
+      "type": "string"
+    }
   ],
   "auth": {
     "type": "bearer",
-    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{token}}",
+        "type": "string"
+      }
+    ]
   },
   "event": [
     {
@@ -96,14 +190,27 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "GET",
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/version", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","version"] }
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/version",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "version"
+              ]
+            }
           }
         }
       ]
     },
-
     {
       "name": "1. Auth",
       "item": [
@@ -120,18 +227,40 @@
                   "pm.test('success true', () => pm.expect(j.success).to.be.true);",
                   "pm.test('token present', () => pm.expect(j.data.token).to.be.a('string').and.not.empty);",
                   "pm.test('expires_in_days > 0', () => pm.expect(j.data.expires_in_days).to.be.above(0));",
-                  "pm.collectionVariables.set('token', j.data.token);",
-                  "pm.collectionVariables.set('token_a', j.data.token);"
+                  "pm.environment.set('token', j.data.token);",
+                  "pm.environment.set('token_a', j.data.token);"
                 ]
               }
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_name\": \"Postman Test Client\",\n  \"device_id\": \"{{device_id}}\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_name\": \"Postman Test Client\",\n  \"device_id\": \"{{device_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -152,11 +281,33 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"wrong-password\",\n  \"device_id\": \"{{device_id}}\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"wrong-password\",\n  \"device_id\": \"{{device_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -174,11 +325,33 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"login\": \"ghost@nope.com\",\n  \"password\": \"x\",\n  \"device_id\": \"{{device_id}}\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"ghost@nope.com\",\n  \"password\": \"x\",\n  \"device_id\": \"{{device_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -196,11 +369,33 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -213,17 +408,39 @@
                 "exec": [
                   "pm.test('200', () => pm.response.to.have.status(200));",
                   "const j = pm.response.json();",
-                  "pm.collectionVariables.set('old_token', j.data.token);"
+                  "pm.environment.set('old_token', j.data.token);"
                 ]
               }
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_id\": \"{{device_id}}\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_id\": \"{{device_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -237,19 +454,41 @@
                   "pm.test('200', () => pm.response.to.have.status(200));",
                   "const j = pm.response.json();",
                   "const newTok = j.data.token;",
-                  "const oldTok = pm.collectionVariables.get('old_token');",
+                  "const oldTok = pm.environment.get('old_token');",
                   "pm.test('new token differs from old', () => pm.expect(newTok).to.not.eql(oldTok));",
-                  "pm.collectionVariables.set('token', newTok);"
+                  "pm.environment.set('token', newTok);"
                 ]
               }
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_id\": \"{{device_id}}\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_id\": \"{{device_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
@@ -266,9 +505,30 @@
             }
           ],
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{old_token}}", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{old_token}}",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/me", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","me"] }
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "me"
+              ]
+            }
           }
         },
         {
@@ -280,22 +540,43 @@
                 "type": "text/javascript",
                 "exec": [
                   "pm.test('200', () => pm.response.to.have.status(200));",
-                  "pm.collectionVariables.set('token_b', pm.response.json().data.token);"
+                  "pm.environment.set('token_b', pm.response.json().data.token);"
                 ]
               }
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_id\": \"{{device_id_alt}}\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_id\": \"{{device_id_alt}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         }
       ]
     },
-
     {
       "name": "2. Profile",
       "item": [
@@ -316,7 +597,22 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/me", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","me"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "me"
+              ]
+            }
+          }
         },
         {
           "name": "2.2 GET /hr/me — no token → 401",
@@ -325,11 +621,31 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('401', () => pm.response.to.have.status(401));"]
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
               }
             }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/me", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","me"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "me"
+              ]
+            }
+          }
         },
         {
           "name": "2.3 GET /hr/me — bad token → 401",
@@ -346,14 +662,34 @@
             }
           ],
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "deadbeefnotvalid", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "deadbeefnotvalid",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/me", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","me"] }
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "me"
+              ]
+            }
           }
         }
       ]
     },
-
     {
       "name": "3. Meta",
       "item": [
@@ -377,29 +713,98 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/config", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","config"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "config"
+              ]
+            }
+          }
         },
         {
           "name": "3.2 Config — no token → 401",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/config", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","config"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/config",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "config"
+              ]
+            }
+          }
         },
         {
           "name": "3.3 Version with bad token — still 200",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200 (auth not required)', () => pm.response.to.have.status(200));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 (auth not required)', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
           ],
           "request": {
-            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "garbage", "type": "string" }] },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "garbage",
+                  "type": "string"
+                }
+              ]
+            },
             "method": "GET",
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/version", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","version"] }
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/version",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "version"
+              ]
+            }
           }
         }
       ]
     },
-
     {
       "name": "4. Leaves",
       "item": [
@@ -415,16 +820,32 @@
                   "const j = pm.response.json();",
                   "pm.test('array', () => pm.expect(j.data).to.be.an('array'));",
                   "if (j.data.length > 0) {",
-          "    const noAlloc = j.data.find(t => !t.requires_allocation);",
-          "    const chosen = noAlloc || j.data[0];",
-          "    pm.collectionVariables.set('leave_type_id', chosen.id);",
-          "    console.log('Using leave type:', chosen.name, '(id:', chosen.id, ', requires_allocation:', chosen.requires_allocation, ')');",
-          "}"
+                  "    const noAlloc = j.data.find(t => !t.requires_allocation);",
+                  "    const chosen = noAlloc || j.data[0];",
+                  "    pm.environment.set('leave_type_id', chosen.id);",
+                  "    console.log('Using leave type:', chosen.name, '(id:', chosen.id, ', requires_allocation:', chosen.requires_allocation, ')');",
+                  "}"
                 ]
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves/types", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves","types"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/types",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves",
+                "types"
+              ]
+            }
+          }
         },
         {
           "name": "4.2 Create Leave — happy",
@@ -434,14 +855,16 @@
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "// Unique far-future date per run — avoids leave-overlap conflicts on re-runs",
-                  "const p = n => String(n).padStart(2,'0');",
-                  "const seed = Math.floor(Date.now() / 86400000) % 28;",
-                  "const f = new Date(2099, seed % 12, (seed % 27) + 1);",
-                  "const ymd = `${f.getFullYear()}-${p(f.getMonth()+1)}-${p(f.getDate())}`;",
-                  "pm.variables.set('leave_date_from', `${ymd}T08:00:00`);",
-                  "pm.variables.set('leave_date_to',   `${ymd}T17:00:00`);",
-                  "console.log('Leave date:', ymd);"
+                  "// Random far-future date each run — collision probability < 1/100000",
+                  "const r = Math.floor(Math.random() * 100000);",
+                  "const year = 2099 + Math.floor(r / 10000);",
+                  "const month = r % 12;",
+                  "const day = (r % 27) + 1;",
+                  "const p = n => String(n).padStart(2,\"0\");",
+                  "const ymd = `${year}-${p(month+1)}-${p(day)}`;",
+                  "pm.environment.set(\"leave_date_from\", `${ymd}T08:00:00`);",
+                  "pm.environment.set(\"leave_date_to\",   `${ymd}T17:00:00`);",
+                  "console.log(\"Leave date:\", ymd);"
                 ]
               }
             },
@@ -454,16 +877,36 @@
                   "const d = pm.response.json().data;",
                   "pm.test('state confirm', () => pm.expect(d.state).to.eql('confirm'));",
                   "pm.test('state_label set', () => pm.expect(d.state_label).to.be.a('string').and.not.empty);",
-                  "pm.collectionVariables.set('created_leave_id', d.id);"
+                  "pm.environment.set('created_leave_id', d.id);"
                 ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"{{leave_date_from}}\",\n  \"date_to\": \"{{leave_date_to}}\",\n  \"description\": \"Scenario 4.2\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"{{leave_date_from}}\",\n  \"date_to\": \"{{leave_date_to}}\",\n  \"description\": \"Scenario 4.2\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves"
+              ]
+            }
           }
         },
         {
@@ -473,15 +916,37 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('404', () => pm.response.to.have.status(404));"]
+                "exec": [
+                  "pm.test('404', () => pm.response.to.have.status(404));"
+                ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"leave_type_id\": 999999,\n  \"date_from\": \"2099-01-01T08:00:00\",\n  \"date_to\": \"2099-01-01T17:00:00\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leave_type_id\": 999999,\n  \"date_from\": \"2099-01-01T08:00:00\",\n  \"date_to\": \"2099-01-01T17:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves"
+              ]
+            }
           }
         },
         {
@@ -491,46 +956,77 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('422 or 400', () => pm.expect([400,422]).to.include(pm.response.code));"]
+                "exec": [
+                  "pm.test('422 or 400', () => pm.expect([400,422]).to.include(pm.response.code));"
+                ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"2099-02-10T17:00:00\",\n  \"date_to\": \"2099-02-10T08:00:00\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"2099-02-10T17:00:00\",\n  \"date_to\": \"2099-02-10T08:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves"
+              ]
+            }
           }
         },
         {
           "name": "4.5 Create Leave — overlap → 422",
           "event": [
             {
-              "listen": "prerequest",
-              "script": {
-                "type": "text/javascript",
-                "exec": [
-                  "const f = new Date(); f.setDate(f.getDate() + 30);",
-                  "const p = n => String(n).padStart(2,'0');",
-                  "const ymd = `${f.getFullYear()}-${p(f.getMonth()+1)}-${p(f.getDate())}`;",
-                  "pm.variables.set('leave_date_from', `${ymd}T08:00:00`);",
-                  "pm.variables.set('leave_date_to',   `${ymd}T17:00:00`);"
-                ]
-              }
-            },
-            {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('422', () => pm.expect([400,422,409]).to.include(pm.response.code));"]
+                "exec": [
+                  "pm.test('422', () => pm.expect([400,422,409]).to.include(pm.response.code));"
+                ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"{{leave_date_from}}\",\n  \"date_to\": \"{{leave_date_to}}\",\n  \"description\": \"Scenario 4.5 overlap\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"{{leave_date_from}}\",\n  \"date_to\": \"{{leave_date_to}}\",\n  \"description\": \"Scenario 4.5 overlap\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves"
+              ]
+            }
           }
         },
         {
@@ -548,7 +1044,33 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?page=1&limit=30", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves","history"], "query": [{ "key": "page", "value": "1" },{ "key": "limit", "value": "30" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?page=1&limit=30",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "30"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "4.7 Leave History — state=confirm",
@@ -565,18 +1087,69 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?state=confirm", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves","history"], "query": [{ "key": "state", "value": "confirm" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?state=confirm",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "state",
+                  "value": "confirm"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "4.8 Leave History — invalid state → 400/422",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('rejected', () => pm.expect([400,422]).to.include(pm.response.code));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('rejected', () => pm.expect([400,422]).to.include(pm.response.code));"
+                ]
+              }
+            }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?state=garbage", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves","history"], "query": [{ "key": "state", "value": "garbage" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?state=garbage",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "state",
+                  "value": "garbage"
+                }
+              ]
+            }
+          }
         }
       ]
     },
-
     {
       "name": "5. Attendance",
       "item": [
@@ -593,7 +1166,7 @@
                   "    const d = pm.response.json().data;",
                   "    pm.test('attendance_id', () => pm.expect(d.attendance_id).to.be.a('number'));",
                   "    pm.test('check_in ISO', () => pm.expect(d.check_in).to.match(/^\\d{4}-\\d{2}-\\d{2}T/));",
-                  "    pm.collectionVariables.set('attendance_id', d.attendance_id);",
+                  "    pm.environment.set('attendance_id', d.attendance_id);",
                   "}"
                 ]
               }
@@ -601,9 +1174,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 12.5,\n  \"device_meta\": { \"device_id\": \"{{device_id}}\", \"platform\": \"iOS\", \"app_version\": \"1.0.0\" }\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 12.5,\n  \"device_meta\": { \"device_id\": \"{{device_id}}\", \"platform\": \"iOS\", \"app_version\": \"1.0.0\" }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in"
+              ]
+            }
           }
         },
         {
@@ -622,9 +1216,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in"
+              ]
+            }
           }
         },
         {
@@ -643,21 +1258,72 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"latitude\": {{lat_out_zone}},\n  \"longitude\": {{lng_out_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": {{lat_out_zone}},\n  \"longitude\": {{lng_out_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in"
+              ]
+            }
           }
         },
         {
           "name": "5.4 Check-in invalid coords → 400/422",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('rejected', () => pm.expect([400,422]).to.include(pm.response.code));", "pm.test('not 500', () => pm.expect(pm.response.code).to.not.eql(500));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('rejected', () => pm.expect([400,422]).to.include(pm.response.code));",
+                  "pm.test('not 500', () => pm.expect(pm.response.code).to.not.eql(500));"
+                ]
+              }
+            }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"latitude\": 999,\n  \"longitude\": \"abc\"\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 999,\n  \"longitude\": \"abc\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in"
+              ]
+            }
           }
         },
         {
@@ -680,9 +1346,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 15.0\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 15.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-out"
+              ]
+            }
           }
         },
         {
@@ -701,9 +1388,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-out"
+              ]
+            }
           }
         },
         {
@@ -720,32 +1428,169 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=1&limit=20", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","history"], "query": [{ "key": "page", "value": "1" },{ "key": "limit", "value": "20" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "5.8 Attendance History — date range",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200', () => pm.response.to.have.status(200));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?date_from=2024-01-01T00:00:00&date_to=2030-12-31T23:59:59&page=1&limit=20", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","history"], "query": [{ "key": "date_from", "value": "2024-01-01T00:00:00" },{ "key": "date_to", "value": "2030-12-31T23:59:59" },{ "key": "page", "value": "1" },{ "key": "limit", "value": "20" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?date_from=2024-01-01T00:00:00&date_to=2030-12-31T23:59:59&page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "date_from",
+                  "value": "2024-01-01T00:00:00"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2030-12-31T23:59:59"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "5.9 Attendance History — limit > 100 clamp/reject",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200 with clamp or 422', () => pm.expect([200,422,400]).to.include(pm.response.code));", "if (pm.response.code === 200) { const recs = pm.response.json().data.records; pm.test('len <= 100', () => pm.expect(recs.length).to.be.at.most(100)); }"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 with clamp or 422', () => pm.expect([200,422,400]).to.include(pm.response.code));",
+                  "if (pm.response.code === 200) { const recs = pm.response.json().data.records; pm.test('len <= 100', () => pm.expect(recs.length).to.be.at.most(100)); }"
+                ]
+              }
+            }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=1&limit=500", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","history"], "query": [{ "key": "page", "value": "1" },{ "key": "limit", "value": "500" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=1&limit=500",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "500"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "5.10 Attendance History — page far out → empty",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('200', () => pm.response.to.have.status(200));", "pm.test('empty records', () => pm.expect(pm.response.json().data.records.length).to.eql(0));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200));",
+                  "pm.test('empty records', () => pm.expect(pm.response.json().data.records.length).to.eql(0));"
+                ]
+              }
+            }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=9999&limit=20", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","history"], "query": [{ "key": "page", "value": "9999" },{ "key": "limit", "value": "20" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=9999&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "9999"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
         }
       ]
     },
-
     {
       "name": "6. Payslips",
       "item": [
@@ -760,12 +1605,37 @@
                   "pm.test('200 or 503', () => pm.expect([200,503]).to.include(pm.response.code));",
                   "const j = pm.response.json();",
                   "if (pm.response.code === 503) pm.test('NOT_AVAILABLE', () => pm.expect(j.error.code).to.eql('NOT_AVAILABLE'));",
-                  "if (pm.response.code === 200 && j.data.records.length) pm.collectionVariables.set('payslip_id', j.data.records[0].id);"
+                  "if (pm.response.code === 200 && j.data.records.length) pm.environment.set('payslip_id', j.data.records[0].id);"
                 ]
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/payslips?page=1&limit=20", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","payslips"], "query": [{ "key": "page", "value": "1" },{ "key": "limit", "value": "20" }] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips?page=1&limit=20",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "payslips"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            }
+          }
         },
         {
           "name": "6.2 Detail — happy",
@@ -784,14 +1654,54 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/payslips/{{payslip_id}}", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","payslips","{{payslip_id}}"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips/{{payslip_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "payslips",
+                "{{payslip_id}}"
+              ]
+            }
+          }
         },
         {
           "name": "6.3 Detail — unknown id → 404",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('404 or 503', () => pm.expect([404,503]).to.include(pm.response.code));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404 or 503', () => pm.expect([404,503]).to.include(pm.response.code));"
+                ]
+              }
+            }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/payslips/999999", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","payslips","999999"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips/999999",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "payslips",
+                "999999"
+              ]
+            }
+          }
         },
         {
           "name": "6.4 Detail — other employee's payslip → 403 (security)",
@@ -807,67 +1717,241 @@
               }
             }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/payslips/{{other_payslip_id}}", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","payslips","{{other_payslip_id}}"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips/{{other_payslip_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "payslips",
+                "{{other_payslip_id}}"
+              ]
+            }
+          }
         }
       ]
     },
-
     {
       "name": "7. Cross-cutting",
       "item": [
         {
           "name": "7.1 Method not allowed — GET /auth/login",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": [
-              "pm.test('405 or 404 (Odoo rejects wrong method)', () => pm.expect([404,405]).to.include(pm.response.code));"
-            ] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('405 or 404 (Odoo rejects wrong method)', () => pm.expect([404,405]).to.include(pm.response.code));"
+                ]
+              }
+            }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
+          }
         },
         {
           "name": "7.2 Malformed JSON → 400",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('400 or 422', () => pm.expect([400,422]).to.include(pm.response.code));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400 or 422', () => pm.expect([400,422]).to.include(pm.response.code));"
+                ]
+              }
+            }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{not-json" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/login", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","login"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{not-json"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "login"
+              ]
+            }
           }
         },
         {
           "name": "7.3 Authed sweep w/o token — /hr/me",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/me", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","me"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "me"
+              ]
+            }
+          }
         },
         {
           "name": "7.4 Authed sweep w/o token — /attendance/history",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","history"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "history"
+              ]
+            }
+          }
         },
         {
           "name": "7.5 Authed sweep w/o token — /leaves/types",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/leaves/types", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","leaves","types"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/types",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "leaves",
+                "types"
+              ]
+            }
+          }
         },
         {
           "name": "7.6 Authed sweep w/o token — /payslips",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
           ],
-          "request": { "auth": { "type": "noauth" }, "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/payslips", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","payslips"] } }
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "payslips"
+              ]
+            }
+          }
         }
       ]
     },
-
     {
       "name": "9. PIN Attendance",
       "item": [
@@ -883,16 +1967,37 @@
                   "const d = pm.response.json().data;",
                   "pm.test('attendance_id present', () => pm.expect(d.attendance_id).to.be.a('number'));",
                   "pm.test('check_in ISO', () => pm.expect(d.check_in).to.match(/^\\d{4}-\\d{2}-\\d{2}T/));",
-                  "pm.collectionVariables.set('pin_attendance_id', d.attendance_id);"
+                  "pm.environment.set('pin_attendance_id', d.attendance_id);"
                 ]
               }
             }
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 12.5\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 12.5\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         },
         {
@@ -911,9 +2016,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         },
         {
@@ -932,9 +2058,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"000000\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"000000\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         },
         {
@@ -953,9 +2100,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         },
         {
@@ -965,16 +2133,41 @@
               "listen": "test",
               "script": {
                 "type": "text/javascript",
-                "exec": ["pm.test('401', () => pm.response.to.have.status(401));"]
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
               }
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         },
         {
@@ -993,9 +2186,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_out_zone}},\n  \"longitude\": {{lng_out_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_out_zone}},\n  \"longitude\": {{lng_out_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         },
         {
@@ -1015,9 +2229,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 10.0\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}},\n  \"accuracy\": 10.0\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-out-pin"
+              ]
+            }
           }
         },
         {
@@ -1036,9 +2271,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"{{pin}}\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-out-pin"
+              ]
+            }
           }
         },
         {
@@ -1057,9 +2313,30 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{\n  \"pin\": \"999999\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-out-pin"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pin\": \"999999\",\n  \"latitude\": {{lat_in_zone}},\n  \"longitude\": {{lng_in_zone}}\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-out-pin"
+              ]
+            }
           }
         },
         {
@@ -1077,14 +2354,28 @@
             }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "OPTIONS",
-            "url": { "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","attendance","check-in-pin"] }
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in-pin",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "attendance",
+                "check-in-pin"
+              ]
+            }
           }
         }
       ]
     },
-
     {
       "name": "8. Auth — Logout",
       "item": [
@@ -1104,29 +2395,103 @@
           ],
           "request": {
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/logout", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","logout"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "logout"
+              ]
+            }
           }
         },
         {
           "name": "8.2 Token revoked — /hr/me 401",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));", "pm.collectionVariables.set('token', '');"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));",
+                  "pm.environment.set('token', '');"
+                ]
+              }
+            }
           ],
-          "request": { "method": "GET", "url": { "raw": "{{base_url}}/api/v1/mobile/hr/me", "host": ["{{base_url}}"], "path": ["api","v1","mobile","hr","me"] } }
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "hr",
+                "me"
+              ]
+            }
+          }
         },
         {
           "name": "8.3 Logout — no token → 401",
           "event": [
-            { "listen": "test", "script": { "type": "text/javascript", "exec": ["pm.test('401', () => pm.response.to.have.status(401));"] } }
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
           ],
           "request": {
-            "auth": { "type": "noauth" },
+            "auth": {
+              "type": "noauth"
+            },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": { "mode": "raw", "raw": "{}" },
-            "url": { "raw": "{{base_url}}/api/v1/mobile/auth/logout", "host": ["{{base_url}}"], "path": ["api","v1","mobile","auth","logout"] }
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/logout",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "mobile",
+                "auth",
+                "logout"
+              ]
+            }
           }
         }
       ]

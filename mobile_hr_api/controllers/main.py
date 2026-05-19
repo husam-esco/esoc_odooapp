@@ -734,6 +734,10 @@ class MobileHrApiController(http.Controller):
             ).create({
                 'employee_id': employee.id,
                 'holiday_status_id': lt_id,
+                # request_date_* are the Date fields that drive _compute_date_from_to;
+                # without them, Odoo defaults both to today regardless of date_from/date_to.
+                'request_date_from': date_from_dt.date(),
+                'request_date_to': date_to_dt.date(),
                 'date_from': date_from_dt,
                 'date_to': date_to_dt,
                 'name': description or f'Leave — {employee.name}',
