@@ -1,0 +1,538 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "Mobile HR API — Odoo 19",
+    "description": "Complete collection for the mobile_hr_api Odoo 19 CE module.\n\nQuick start:\n1. Import this collection and the accompanying environment file.\n2. Set `base_url`, `login`, `password` in the environment.\n3. Run **Auth / Login** — the token is saved automatically.\n4. All other requests pick it up via `{{token}}`.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url",      "value": "http://localhost:19006", "type": "string" },
+    { "key": "token",         "value": "",                       "type": "string", "description": "Auto-populated by the Login test script" },
+    { "key": "login",         "value": "employee@company.com",   "type": "string" },
+    { "key": "password",      "value": "employee_password",      "type": "string" },
+    { "key": "device_id",     "value": "POSTMAN-DEVICE-001",     "type": "string" },
+    { "key": "leave_type_id", "value": "1",                      "type": "string" },
+    { "key": "payslip_id",    "value": "1",                      "type": "string" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Login successful', () => pm.expect(json.success).to.be.true);",
+                  "if (json.success && json.data && json.data.token) {",
+                  "    pm.collectionVariables.set('token', json.data.token);",
+                  "    console.log('Token saved — expires in', json.data.expires_in_days, 'days');",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"login\": \"{{login}}\",\n  \"password\": \"{{password}}\",\n  \"device_name\": \"Postman Test Client\",\n  \"device_id\": \"{{device_id}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "auth", "login"]
+            },
+            "description": "Authenticate with Odoo credentials. Returns a Bearer token valid for the configured number of days (default 30).\n\nThe test script auto-saves the token to `{{token}}`."
+          },
+          "response": [
+            {
+              "name": "200 OK — Login successful",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"token\": \"xyzABCabc...\",\n    \"employee_name\": \"John Smith\",\n    \"expires_in_days\": 30\n  }\n}"
+            },
+            {
+              "name": "401 — Invalid credentials",
+              "status": "Unauthorized",
+              "code": 401,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"error\": { \"code\": \"UNAUTHORIZED\", \"message\": \"Invalid credentials\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "pm.test('Logout successful', () => pm.expect(json.success).to.be.true);",
+                  "pm.collectionVariables.set('token', '');"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{}", "options": { "raw": { "language": "json" } } },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "auth", "logout"]
+            },
+            "description": "Revokes the current Bearer token. The token is cleared from collection variables."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Profile",
+      "item": [
+        {
+          "name": "Get My Profile",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Profile returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('id');",
+                  "    pm.expect(json.data).to.have.property('name');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "me"]
+            },
+            "description": "Returns the authenticated employee's full profile."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 42,\n    \"name\": \"John Smith\",\n    \"employee_number\": \"EMP-0042\",\n    \"job_title\": \"Software Engineer\",\n    \"job_position\": { \"id\": 5, \"name\": \"Developer\" },\n    \"department\": { \"id\": 3, \"name\": \"Engineering\" },\n    \"company\": { \"id\": 1, \"name\": \"ACME Corp\" },\n    \"work_location\": { \"id\": 2, \"name\": \"HQ - Dubai\" },\n    \"manager\": { \"id\": 10, \"name\": \"Jane Doe\" },\n    \"work_email\": \"john.smith@acme.com\",\n    \"work_phone\": \"+971 4 000 0000\",\n    \"mobile_phone\": \"+971 55 000 0000\",\n    \"image_url\": \"/web/image/hr.employee/42/image_128\"\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Check In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Check-in accepted (201) or already checked in (409)', () => {",
+                  "    pm.expect([201, 409]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 25.2048,\n  \"longitude\": 55.2708,\n  \"accuracy\": 12.5,\n  \"device_meta\": {\n    \"device_id\": \"{{device_id}}\",\n    \"platform\": \"iOS\",\n    \"app_version\": \"1.0.0\"\n  }\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-in",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "attendance", "check-in"]
+            },
+            "description": "Check in the authenticated employee.\n\n`latitude` and `longitude` are required when GPS validation is enabled in API Settings.\n\n**Error codes:**\n- `409 ALREADY_CHECKED_IN` — open attendance already exists\n- `403 GEOFENCE_VIOLATION` — outside all active geofence zones"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"attendance_id\": 101,\n    \"check_in\": \"2024-06-01T08:00:00\",\n    \"geofence_message\": \"Within zone — 42m from centre\"\n  }\n}"
+            },
+            {
+              "name": "403 GEOFENCE_VIOLATION",
+              "status": "Forbidden",
+              "code": 403,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": false,\n  \"error\": { \"code\": \"GEOFENCE_VIOLATION\", \"message\": \"Outside all active geofence zones (nearest: HQ Office — 847m away, radius 200m)\" }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Check Out",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Check-out accepted (200) or not checked in (409)', () => {",
+                  "    pm.expect([200, 409]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 25.2050,\n  \"longitude\": 55.2711,\n  \"accuracy\": 15.0\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/check-out",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "attendance", "check-out"]
+            },
+            "description": "Check out the authenticated employee. Closes the most recent open attendance record.\n\n**Error codes:**\n- `409 NOT_CHECKED_IN` — no open attendance to close\n- `403 GEOFENCE_VIOLATION` — outside all active geofence zones"
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"attendance_id\": 101,\n    \"check_in\": \"2024-06-01T08:00:00\",\n    \"check_out\": \"2024-06-01T17:02:33\",\n    \"worked_hours\": 9.0425,\n    \"geofence_message\": \"Within zone — 38m from centre\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Attendance History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Attendance history returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('records');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/attendance/history?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "attendance", "history"],
+              "query": [
+                { "key": "date_from", "value": null,  "disabled": true, "description": "ISO 8601 e.g. 2024-06-01T00:00:00" },
+                { "key": "date_to",   "value": null,  "disabled": true, "description": "ISO 8601 e.g. 2024-06-30T23:59:59" },
+                { "key": "page",      "value": "1" },
+                { "key": "limit",     "value": "20",  "description": "Max 100" }
+              ]
+            },
+            "description": "Paginated attendance history for the authenticated employee. All records are scoped to the authenticated employee — no employee_id needed."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Leaves",
+      "item": [
+        {
+          "name": "Leave Types",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Leave types returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.be.an('array');",
+                  "    if (json.data.length > 0) {",
+                  "        pm.collectionVariables.set('leave_type_id', json.data[0].id);",
+                  "        console.log('First leave type:', json.data[0].name, '(id:', json.data[0].id, ')');",
+                  "    }",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/types",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "leaves", "types"]
+            },
+            "description": "Returns all active leave types available to the employee's company. The test script saves the first type's ID to `{{leave_type_id}}`."
+          }
+        },
+        {
+          "name": "Create Leave Request",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Set dates 30 days from now to avoid conflicts",
+                  "const future = new Date();",
+                  "future.setDate(future.getDate() + 30);",
+                  "const pad = n => String(n).padStart(2, '0');",
+                  "const y = future.getFullYear(), m = pad(future.getMonth()+1), d = pad(future.getDate());",
+                  "pm.variables.set('leave_date_from', `${y}-${m}-${d}T08:00:00`);",
+                  "pm.variables.set('leave_date_to',   `${y}-${m}-${d}T17:00:00`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Leave created (201) or validation error (422)', () => {",
+                  "    pm.expect([201, 422, 400]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"leave_type_id\": {{leave_type_id}},\n  \"date_from\": \"{{leave_date_from}}\",\n  \"date_to\": \"{{leave_date_to}}\",\n  \"description\": \"Postman test leave request\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "leaves"]
+            },
+            "description": "Submit a leave request. The pre-request script auto-calculates dates 30 days from now.\n\nLeave is created in `confirm` state (pending manager approval).\n\n**Common errors:**\n- `404` — leave_type_id does not exist\n- `422` — allocation exhausted, overlapping leave, or other Odoo validation failure"
+          },
+          "response": [
+            {
+              "name": "201 Created",
+              "status": "Created",
+              "code": 201,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"id\": 55,\n    \"name\": \"Postman test leave request\",\n    \"leave_type\": { \"id\": 1, \"name\": \"Annual Leave\" },\n    \"date_from\": \"2024-07-15T08:00:00\",\n    \"date_to\": \"2024-07-15T17:00:00\",\n    \"number_of_days\": 1.0,\n    \"state\": \"confirm\",\n    \"state_label\": \"To Approve\",\n    \"refuse_reason\": \"\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Leave History",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Leave history returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('records');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/leaves/history?page=1&limit=30",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "leaves", "history"],
+              "query": [
+                { "key": "state", "value": null, "disabled": true, "description": "draft | confirm | validate1 | validate | refuse" },
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "30", "description": "Max 100" }
+              ]
+            },
+            "description": "Paginated leave history for the authenticated employee. Filter by `state` to show only pending, approved, etc."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payslips",
+      "item": [
+        {
+          "name": "Payslip List",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Payslip list returned or module unavailable', () => {",
+                  "    pm.expect([200, 503]).to.include(pm.response.code);",
+                  "});",
+                  "const json = pm.response.json();",
+                  "if (json.success && json.data && json.data.records && json.data.records.length > 0) {",
+                  "    pm.collectionVariables.set('payslip_id', json.data.records[0].id);",
+                  "    console.log('First payslip ID saved:', json.data.records[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "payslips"],
+              "query": [
+                { "key": "page",  "value": "1" },
+                { "key": "limit", "value": "20" }
+              ]
+            },
+            "description": "List payslips for the authenticated employee. Returns `503 NOT_AVAILABLE` if `hr_payroll` is not installed.\n\nThe test script saves the first payslip ID to `{{payslip_id}}`."
+          }
+        },
+        {
+          "name": "Payslip Detail",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Payslip detail returned or module unavailable', () => {",
+                  "    pm.expect([200, 404, 403, 503]).to.include(pm.response.code);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/payslips/{{payslip_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "payslips", "{{payslip_id}}"]
+            },
+            "description": "Full payslip detail including salary lines, worked days, and input lines.\n\nThe server validates the payslip belongs to the authenticated employee. Passing another employee's ID returns `403 FORBIDDEN`."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Meta",
+      "item": [
+        {
+          "name": "Version (no auth)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Version endpoint reachable', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data.api_version).to.equal('v1');",
+                  "    console.log('Module version:', json.data.module_version);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/version",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "version"]
+            },
+            "description": "Health-check / version endpoint. No authentication required. Safe to use for liveness probes."
+          },
+          "response": [
+            {
+              "name": "200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [{ "key": "Content-Type", "value": "application/json" }],
+              "body": "{\n  \"success\": true,\n  \"data\": {\n    \"module\": \"mobile_hr_api\",\n    \"module_version\": \"1.0.0\",\n    \"api_version\": \"v1\",\n    \"odoo_series\": \"19.0\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Config",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Config returned', () => {",
+                  "    const json = pm.response.json();",
+                  "    pm.expect(json.success).to.be.true;",
+                  "    pm.expect(json.data).to.have.property('require_gps_validation');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/mobile/hr/config",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "mobile", "hr", "config"]
+            },
+            "description": "Returns company-level settings that the mobile app needs at startup: GPS enforcement flag, token validity, and geofence zone names/radii (coordinates are not exposed)."
+          }
+        }
+      ]
+    }
+  ]
+}

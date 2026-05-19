@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_mobile_hr_api_settings_form" model="ir.ui.view">
+        <field name="name">mobile.hr.api.settings.form</field>
+        <field name="model">mobile.hr.api.settings</field>
+        <field name="arch" type="xml">
+            <form string="Mobile HR API Settings">
+                <sheet>
+                    <group string="General">
+                        <field name="company_id" options="{'no_create': True}"/>
+                        <field name="is_enabled"/>
+                        <field name="token_validity_days"/>
+                    </group>
+                    <group string="GPS &amp; Geofence">
+                        <field name="require_gps_validation"/>
+                        <field name="default_geofence_id"
+                               invisible="not require_gps_validation"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_mobile_hr_api_settings_list" model="ir.ui.view">
+        <field name="name">mobile.hr.api.settings.list</field>
+        <field name="model">mobile.hr.api.settings</field>
+        <field name="arch" type="xml">
+            <list string="Mobile HR API Settings">
+                <field name="company_id"/>
+                <field name="is_enabled"/>
+                <field name="token_validity_days"/>
+                <field name="require_gps_validation"/>
+                <field name="default_geofence_id"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_mobile_hr_api_settings" model="ir.actions.act_window">
+        <field name="name">API Settings</field>
+        <field name="res_model">mobile.hr.api.settings</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_mobile_hr_api_token_list" model="ir.ui.view">
+        <field name="name">mobile.hr.api.token.list</field>
+        <field name="model">mobile.hr.api.token</field>
+        <field name="arch" type="xml">
+            <list string="API Tokens" decoration-muted="not is_active">
+                <field name="user_id"/>
+                <field name="device_name"/>
+                <field name="device_id"/>
+                <field name="is_active"/>
+                <field name="last_used"/>
+                <field name="expires_at"/>
+                <field name="ip_address"/>
+                <field name="created_at"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_mobile_hr_api_token_form" model="ir.ui.view">
+        <field name="name">mobile.hr.api.token.form</field>
+        <field name="model">mobile.hr.api.token</field>
+        <field name="arch" type="xml">
+            <form string="API Token">
+                <sheet>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="device_name"/>
+                        <field name="device_id"/>
+                        <field name="is_active"/>
+                        <field name="ip_address"/>
+                        <field name="last_used"/>
+                        <field name="expires_at"/>
+                        <field name="created_at"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_mobile_hr_api_token" model="ir.actions.act_window">
+        <field name="name">API Tokens</field>
+        <field name="res_model">mobile.hr.api.token</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="menu_mobile_hr_api_root"
+        name="Mobile API"
+        parent="hr.menu_hr_root"
+        sequence="99"
+        groups="hr.group_hr_manager"/>
+
+    <menuitem
+        id="menu_mobile_hr_api_config"
+        name="Configuration"
+        parent="menu_mobile_hr_api_root"
+        sequence="10"
+        groups="hr.group_hr_manager"/>
+
+    <menuitem
+        id="menu_mobile_hr_api_settings"
+        name="API Settings"
+        parent="menu_mobile_hr_api_config"
+        action="action_mobile_hr_api_settings"
+        sequence="10"
+        groups="hr.group_hr_manager"/>
+
+    <menuitem
+        id="menu_mobile_hr_api_tokens"
+        name="Active Tokens"
+        parent="menu_mobile_hr_api_config"
+        action="action_mobile_hr_api_token"
+        sequence="30"
+        groups="hr.group_hr_manager"/>
+
+</odoo>

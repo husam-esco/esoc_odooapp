@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        These record rules are a defense-in-depth layer.
+        The primary security enforcement is in the controller (_authenticate method
+        + explicit employee_id filters on every query).
+
+        All controller database access uses sudo(), so record rules do NOT restrict
+        controller queries. These rules protect direct ORM access through the
+        Odoo UI or RPC by non-admin users.
+    -->
+
+    <!-- ── API tokens: each user sees only their own tokens ─────────────────── -->
+    <record id="rule_mobile_hr_api_token_own" model="ir.rule">
+        <field name="name">Mobile API Token: own records only</field>
+        <field name="model_id" ref="model_mobile_hr_api_token"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- ── Audit log: HR users read-only; portal users have no access ────────── -->
+    <record id="rule_mobile_hr_api_audit_log_hr_user" model="ir.rule">
+        <field name="name">Mobile API Audit Log: read-only for HR users</field>
+        <field name="model_id" ref="model_mobile_hr_api_audit_log"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('hr.group_hr_user'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- ── Geofence: portal users cannot read geofence coordinates via RPC ───── -->
+    <!-- (They receive only radius/accuracy info through the /config endpoint.) -->
+    <record id="rule_mobile_hr_api_geofence_portal_deny" model="ir.rule">
+        <field name="name">Mobile API Geofence: deny portal direct read</field>
+        <field name="model_id" ref="model_mobile_hr_api_geofence"/>
+        <field name="domain_force">[(0, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+
+    <!-- ── Settings: portal users cannot read settings via RPC ──────────────── -->
+    <record id="rule_mobile_hr_api_settings_portal_deny" model="ir.rule">
+        <field name="name">Mobile API Settings: deny portal direct read</field>
+        <field name="model_id" ref="model_mobile_hr_api_settings"/>
+        <field name="domain_force">[(0, '=', 1)]</field>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+</odoo>

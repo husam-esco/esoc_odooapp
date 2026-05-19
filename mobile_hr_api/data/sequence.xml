@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!--
+        No custom sequences are required for v1.
+        Audit log IDs use the standard ORM auto-increment.
+        This file is a placeholder to preserve the manifest data loading order.
+    -->
+</odoo>

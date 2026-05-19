@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_mobile_hr_api_geofence_form" model="ir.ui.view">
+        <field name="name">mobile.hr.api.geofence.form</field>
+        <field name="model">mobile.hr.api.geofence</field>
+        <field name="arch" type="xml">
+            <form string="Geofence Zone">
+                <sheet>
+                    <group string="Zone Identity">
+                        <field name="name"/>
+                        <field name="company_id" options="{'no_create': True}"/>
+                        <field name="work_location_id"
+                               options="{'no_create': True}"
+                               domain="[('company_id', '=', company_id)]"/>
+                        <field name="is_active"/>
+                    </group>
+                    <group string="GPS Centre">
+                        <field name="latitude"/>
+                        <field name="longitude"/>
+                    </group>
+                    <group string="Validation Rules">
+                        <field name="radius_meters"/>
+                        <field name="min_accuracy_meters"/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_mobile_hr_api_geofence_list" model="ir.ui.view">
+        <field name="name">mobile.hr.api.geofence.list</field>
+        <field name="model">mobile.hr.api.geofence</field>
+        <field name="arch" type="xml">
+            <list string="Geofence Zones" decoration-muted="not is_active">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="work_location_id"/>
+                <field name="latitude"/>
+                <field name="longitude"/>
+                <field name="radius_meters"/>
+                <field name="min_accuracy_meters"/>
+                <field name="is_active"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_mobile_hr_api_geofence" model="ir.actions.act_window">
+        <field name="name">Geofence Zones</field>
+        <field name="res_model">mobile.hr.api.geofence</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <menuitem
+        id="menu_mobile_hr_api_geofence"
+        name="Geofence Zones"
+        parent="menu_mobile_hr_api_config"
+        action="action_mobile_hr_api_geofence"
+        sequence="20"
+        groups="hr.group_hr_manager"/>
+
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        Creates a default settings record for the main company on first install.
+        noupdate="1" means this record is not overwritten on module upgrade.
+        Additional companies get their settings on first API call via get_settings().
+    -->
+    <record id="mobile_hr_api_settings_main_company" model="mobile.hr.api.settings">
+        <field name="company_id" ref="base.main_company"/>
+        <field name="is_enabled" eval="True"/>
+        <field name="token_validity_days">30</field>
+        <field name="require_gps_validation" eval="True"/>
+    </record>
+</odoo>

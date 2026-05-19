@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_mobile_hr_api_settings_manager,mobile.hr.api.settings / HR Manager,model_mobile_hr_api_settings,hr.group_hr_manager,1,1,1,1
+access_mobile_hr_api_settings_user,mobile.hr.api.settings / HR User,model_mobile_hr_api_settings,hr.group_hr_user,1,0,0,0
+access_mobile_hr_api_geofence_manager,mobile.hr.api.geofence / HR Manager,model_mobile_hr_api_geofence,hr.group_hr_manager,1,1,1,1
+access_mobile_hr_api_geofence_user,mobile.hr.api.geofence / HR User,model_mobile_hr_api_geofence,hr.group_hr_user,1,0,0,0
+access_mobile_hr_api_token_manager,mobile.hr.api.token / HR Manager,model_mobile_hr_api_token,hr.group_hr_manager,1,1,1,1
+access_mobile_hr_api_token_portal,mobile.hr.api.token / Portal,model_mobile_hr_api_token,base.group_portal,1,0,0,0
+access_mobile_hr_api_audit_log_manager,mobile.hr.api.audit.log / HR Manager,model_mobile_hr_api_audit_log,hr.group_hr_manager,1,0,1,0
+access_mobile_hr_api_audit_log_user,mobile.hr.api.audit.log / HR User,model_mobile_hr_api_audit_log,hr.group_hr_user,1,0,0,0
