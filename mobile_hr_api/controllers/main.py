@@ -11,7 +11,7 @@ _logger = logging.getLogger(__name__)
 
 _BASE = '/api/v1/mobile/hr'
 _AUTH = '/api/v1/mobile/auth'
-_PUSH = '/api/v1/mobile/push'
+_PUSH = '/api/v1/mobile/hr/push'
 
 
 # ─── Response helpers ──────────────────────────────────────────────────────────
@@ -333,7 +333,7 @@ class MobileHrApiController(http.Controller):
     # ── CORS preflight ─────────────────────────────────────────────────────────
 
     @http.route(
-        [f'{_AUTH}/<path:subpath>', f'{_BASE}/<path:subpath>'],
+        [f'{_AUTH}/<path:subpath>', f'{_BASE}/<path:subpath>', f'{_PUSH}/<path:subpath>'],
         type='http', auth='none', methods=['OPTIONS'], csrf=False,
     )
     def cors_preflight(self, subpath, **kw):
