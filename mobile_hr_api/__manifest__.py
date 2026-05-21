@@ -16,10 +16,10 @@
         'hr_attendance',
         'hr_holidays',
         'portal',
-        # hr_payroll: uncomment when OCA payroll (or enterprise payroll) is installed.
+        # om_hr_payroll: uncomment after installing OdooMates community payroll.
         # Payslip endpoints return HTTP 503 automatically when the model is absent,
         # so this dependency is optional at the module level.
-        # 'hr_payroll',
+        # 'om_hr_payroll',
     ],
     'data': [
         'security/ir.model.access.csv',

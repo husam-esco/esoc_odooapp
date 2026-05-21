@@ -81,6 +81,15 @@ def _coerce_float(value, field_name):
         return None, f'{field_name} must be a numeric value'
 
 
+def _validate_coords(lat, lon):
+    """Return error string if lat/lon are out of WGS-84 range, else None."""
+    if lat is not None and not (-90 <= lat <= 90):
+        return f'latitude {lat} out of range [-90, 90]'
+    if lon is not None and not (-180 <= lon <= 180):
+        return f'longitude {lon} out of range [-180, 180]'
+    return None
+
+
 # ─── Serialisers ───────────────────────────────────────────────────────────────
 
 def _ser_employee(emp):
@@ -162,6 +171,18 @@ def _ser_payslip_summary(slip):
     }
 
 
+def _wage_from_lines(slip, category_code):
+    """Extract a wage total from payslip lines by salary category code.
+    Fallback for payroll modules (e.g. om_hr_payroll) that don't store net_wage/gross_wage
+    as direct fields on hr.payslip.
+    """
+    for line in slip.line_ids:
+        cat = line.category_id
+        if cat and getattr(cat, 'code', '') == category_code:
+            return getattr(line, 'total', 0.0)
+    return None
+
+
 def _ser_payslip_detail(slip):
     salary_lines = []
     for line in slip.line_ids:
@@ -194,17 +215,23 @@ def _ser_payslip_detail(slip):
         for il in getattr(slip, 'input_line_ids', [])
     ]
 
+    # om_hr_payroll uses version_id (employment version) instead of contract_id.
+    contract = getattr(slip, 'version_id', None) or getattr(slip, 'contract_id', None)
+    # om_hr_payroll has no net_wage/gross_wage fields — derive from salary lines.
+    net_wage = getattr(slip, 'net_wage', None) or _wage_from_lines(slip, 'NET')
+    gross_wage = getattr(slip, 'gross_wage', None) or _wage_from_lines(slip, 'GROSS')
+
     return {
         **_ser_payslip_summary(slip),
         'contract': {
-            'id': slip.contract_id.id,
-            'name': slip.contract_id.name,
-        } if slip.contract_id else None,
+            'id': contract.id,
+            'name': contract.name,
+        } if contract else None,
         'salary_lines': salary_lines,
         'worked_days': worked_days,
         'input_lines': input_lines,
-        'net_wage': getattr(slip, 'net_wage', None),
-        'gross_wage': getattr(slip, 'gross_wage', None),
+        'net_wage': net_wage,
+        'gross_wage': gross_wage,
     }
 
 
@@ -467,6 +494,10 @@ class MobileHrApiController(http.Controller):
             if err:
                 return _json_resp(_err(err, 'BAD_REQUEST'), 400)
 
+        coord_err = _validate_coords(lat, lon)
+        if coord_err:
+            return _json_resp(_err(coord_err, 'BAD_REQUEST'), 400)
+
         geo_ok, geo_msg = self._geofence_check(employee, lat, lon, acc)
         if not geo_ok:
             self._audit(
@@ -538,6 +569,10 @@ class MobileHrApiController(http.Controller):
         for err in (lat_err, lon_err, acc_err):
             if err:
                 return _json_resp(_err(err, 'BAD_REQUEST'), 400)
+
+        coord_err = _validate_coords(lat, lon)
+        if coord_err:
+            return _json_resp(_err(coord_err, 'BAD_REQUEST'), 400)
 
         geo_ok, geo_msg = self._geofence_check(employee, lat, lon, acc)
         if not geo_ok:
