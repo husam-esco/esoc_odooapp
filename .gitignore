@@ -3,3 +3,13 @@
 !.gitignore
 !/mobile_hr_api
 !/mobile_hr_api/**
+!/hr_payroll_community
+!/hr_payroll_community/**
+!/hr_payroll_account_community
+!/hr_payroll_account_community/**
+
+# Ignore compiled Python and IDE/tool artifacts everywhere
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/.claude/
