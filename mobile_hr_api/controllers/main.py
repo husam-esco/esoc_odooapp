@@ -160,27 +160,40 @@ def _ser_leave(leave):
     }
 
 
+_PAYSLIP_STATE_LABELS = {
+    # hr_payroll_community states
+    'draft': 'Draft',
+    'verify': 'Waiting',
+    'done': 'Done',
+    'cancel': 'Rejected',
+}
+
+
 def _ser_payslip_summary(slip):
     return {
         'id': slip.id,
         'name': slip.name or '',
+        'number': getattr(slip, 'number', '') or '',
         'date_from': slip.date_from.isoformat() if slip.date_from else None,
         'date_to': slip.date_to.isoformat() if slip.date_to else None,
         'state': slip.state,
+        'state_label': _PAYSLIP_STATE_LABELS.get(slip.state, slip.state),
         'struct': {'id': slip.struct_id.id, 'name': slip.struct_id.name} if slip.struct_id else None,
     }
 
 
 def _wage_from_lines(slip, category_code):
-    """Extract a wage total from payslip lines by salary category code.
-    Fallback for payroll modules (e.g. om_hr_payroll) that don't store net_wage/gross_wage
-    as direct fields on hr.payslip.
+    """Sum payslip line totals for a given salary category code.
+    hr_payroll_community has no net_wage/gross_wage direct fields on hr.payslip.
     """
+    total = None
     for line in slip.line_ids:
         cat = line.category_id
         if cat and getattr(cat, 'code', '') == category_code:
-            return getattr(line, 'total', 0.0)
-    return None
+            if total is None:
+                total = 0.0
+            total += getattr(line, 'total', 0.0)
+    return total
 
 
 def _ser_payslip_detail(slip):
@@ -215,9 +228,10 @@ def _ser_payslip_detail(slip):
         for il in getattr(slip, 'input_line_ids', [])
     ]
 
-    # om_hr_payroll uses version_id (employment version) instead of contract_id.
-    contract = getattr(slip, 'version_id', None) or getattr(slip, 'contract_id', None)
-    # om_hr_payroll has no net_wage/gross_wage fields — derive from salary lines.
+    # hr_payroll_community: contract_id → hr.version (not hr.contract).
+    # Fallback to version_id for other community modules that rename the field.
+    contract = getattr(slip, 'contract_id', None) or getattr(slip, 'version_id', None)
+    # No direct net_wage/gross_wage on hr.payslip — sum from salary line categories.
     net_wage = getattr(slip, 'net_wage', None) or _wage_from_lines(slip, 'NET')
     gross_wage = getattr(slip, 'gross_wage', None) or _wage_from_lines(slip, 'GROSS')
 
@@ -948,6 +962,57 @@ class MobileHrApiController(http.Controller):
         self._audit(user.id, employee.id, 'payslip_view',
                     f'{_BASE}/payslips/{payslip_id}', 'success')
         return _json_resp(_ok(_ser_payslip_detail(slip)))
+
+    @http.route(
+        f'{_BASE}/payslips/<int:payslip_id>/pdf',
+        type='http', auth='none', methods=['GET', 'OPTIONS'], csrf=False,
+    )
+    def payslip_pdf(self, payslip_id, **kw):
+        if request.httprequest.method == 'OPTIONS':
+            return _preflight()
+        auth_result = self._authenticate()
+        if isinstance(auth_result, Response):
+            return auth_result
+        user, employee = auth_result
+
+        if 'hr.payslip' not in request.env.registry:
+            return _json_resp(_err('Payroll module not installed', 'NOT_AVAILABLE'), 503)
+
+        slip = request.env['hr.payslip'].sudo().browse(payslip_id)
+        if not slip.exists():
+            return _json_resp(_err('Payslip not found', 'NOT_FOUND'), 404)
+
+        if slip.employee_id.id != employee.id:
+            self._audit(
+                user.id, employee.id, 'payslip_idor_attempt',
+                f'{_BASE}/payslips/{payslip_id}/pdf', 'error',
+                f'Employee {employee.id} attempted to access payslip {payslip_id} '
+                f'belonging to employee {slip.employee_id.id}',
+            )
+            return _json_resp(_err('Access denied', 'FORBIDDEN'), 403)
+
+        try:
+            pdf_content, _mime = request.env['ir.actions.report'].sudo()._render_qweb_pdf(
+                'hr_payroll_community.report_payslipdetails',
+                [payslip_id],
+            )
+        except Exception as exc:
+            _logger.exception('Payslip PDF generation failed for payslip %s', payslip_id)
+            return _json_resp(_err(str(exc), 'PDF_ERROR'), 500)
+
+        filename = f'payslip_{slip.number or payslip_id}.pdf'
+        self._audit(user.id, employee.id, 'payslip_pdf',
+                    f'{_BASE}/payslips/{payslip_id}/pdf', 'success')
+        return Response(
+            pdf_content,
+            status=200,
+            content_type='application/pdf',
+            headers={
+                **_CORS_HEADERS,
+                'Content-Disposition': f'attachment; filename="{filename}"',
+                'Content-Length': str(len(pdf_content)),
+            },
+        )
 
     # ── Meta ───────────────────────────────────────────────────────────────────
 

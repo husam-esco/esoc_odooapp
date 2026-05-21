@@ -1,6 +1,6 @@
 {
     'name': 'Mobile HR API',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources',
     'summary': 'Secure mobile self-service API for employees (attendance, leaves, payslips)',
     'description': (
@@ -16,10 +16,10 @@
         'hr_attendance',
         'hr_holidays',
         'portal',
-        # om_hr_payroll: uncomment after installing OdooMates community payroll.
+        # hr_payroll_community: uncomment after installing the community payroll module.
         # Payslip endpoints return HTTP 503 automatically when the model is absent,
         # so this dependency is optional at the module level.
-        # 'om_hr_payroll',
+        # 'hr_payroll_community',
     ],
     'data': [
         'security/ir.model.access.csv',
